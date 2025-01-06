@@ -23,8 +23,29 @@ class Search {
     this.repa.append(this.statistics);
     this.repa.append(this.cross);
 
+    this.input.addEventListener("keyup", this.debouncedSearch());
+
     const demoText = `Name: react<br>Owner: facebook<br>
     Stars: 145231`;
+  }
+
+  debouncedSearch() {
+    return debounce(this.searchRepo.bind(this), 500);
+  }
+
+  async searchRepo() {
+    if (!this.input.value) return;
+    return await fetch(
+      `https://api.github.com/search/repositories?q=${this.input.value}&sort=stars&order=desc&per_page=5`
+    ).then((res) => {
+      if (res.ok) {
+        res.json().then((res) => {
+          res.items.forEach((el) =>
+            console.log(el.name, el.owner.login, el.stargazers_count)
+          );
+        });
+      }
+    });
   }
 
   makeElement(tagName, className) {
@@ -37,3 +58,13 @@ class Search {
 }
 
 new Search();
+
+function debounce(fn, ms) {
+  let timerID = null;
+
+  return function wrapper() {
+    const wrappedFn = () => fn.apply(this);
+    clearTimeout(timerID);
+    timerID = setTimeout(wrappedFn, ms);
+  };
+}
