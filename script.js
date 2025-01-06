@@ -2,6 +2,7 @@ class Search {
   constructor() {
     this.app = document.querySelector(".app");
     this.input = this.makeElement("input", "searchField");
+    this.autocomplete = this.makeElement("ul", "autocomplete");
     this.repoWrapper = this.makeElement("div", "repoWrapper");
 
     this.repa = this.makeElement("div", "repa");
@@ -18,12 +19,13 @@ class Search {
     this.cross.src = this.dataURL;
 
     this.app.append(this.input);
+    this.app.append(this.autocomplete);
     this.app.append(this.repoWrapper);
     this.repoWrapper.append(this.repa);
     this.repa.append(this.statistics);
     this.repa.append(this.cross);
 
-    this.input.addEventListener("keyup", this.debouncedSearch());
+    this.input.addEventListener("input", this.debouncedSearch());
 
     const demoText = `Name: react<br>Owner: facebook<br>
     Stars: 145231`;
@@ -35,17 +37,25 @@ class Search {
 
   async searchRepo() {
     if (!this.input.value) return;
-    return await fetch(
-      `https://api.github.com/search/repositories?q=${this.input.value}&sort=stars&order=desc&per_page=5`
-    ).then((res) => {
-      if (res.ok) {
-        res.json().then((res) => {
-          res.items.forEach((el) =>
-            console.log(el.name, el.owner.login, el.stargazers_count)
-          );
-        });
+    try {
+      const fetchResult = await fetch(
+        `https://api.github.com/search/repositories?q=${this.input.value}&sort=stars&order=desc&per_page=5`
+      );
+
+      if (!fetchResult.ok) {
+        throw new Error(`HTTP error: ${fetchResult.message}`);
       }
-    });
+
+      const dataObj = await fetchResult.json();
+      dataObj.items.forEach((el) => {
+        this.autocomplete__item = this.makeElement("li");
+        this.autocomplete__item.innerHTML = el.name;
+        this.autocomplete.append(this.autocomplete__item);
+        console.log(el.name, el.owner.login, el.stargazers_count);
+      });
+    } catch (error) {
+      console.error("Error:", error.message);
+    }
   }
 
   makeElement(tagName, className) {

@@ -26,10 +26,10 @@ body {
 }
 
 .repoWrapper {
-  margin-top: 100px;
+  margin-top: 45px;
   width: 100%;
   opacity: 0px;
-  border: 1px solid black;
+  border: 1px solid #000;
   border-top: 0px;
   background-color: #E27BEB;
 }
@@ -58,4 +58,27 @@ body {
   width: 48px;
   height: 48px;
   margin-right: 34px;
+}
+
+ul.autocomplete {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.autocomplete li {
+  /* height: 44px; */
+  border: 2px 0px 0px 0px;
+  opacity: 0px;
+  font-family: Roboto;
+  font-size: 30px;
+  font-weight: 400;
+  line-height: 35.16px;
+  text-align: left;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
+  padding-inline-start: 8px;
+  background-color: #E3E3E3;
+  border: 1px solid #000;
+  /* overflow: */
 }
