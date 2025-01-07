@@ -2,6 +2,8 @@ class Search {
   constructor() {
     this.app = document.querySelector(".app");
     this.input = makeElement("input", "searchField");
+    this.input.type = "text";
+    this.input.autofocus = true;
     this.autocomplete = makeElement("ul", "autocomplete");
     this.repoWrapper = makeElement("div", "repoWrapper");
     this.githubSearchObject = null;
