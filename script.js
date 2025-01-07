@@ -43,7 +43,7 @@ class Search {
       );
 
       if (!githubSearchJSONstring.ok) {
-        throw new Error(`HTTP error: ${githubSearchJSONstring.message}`);
+        throw new Error(`HTTP error: ${githubSearchJSONstring.status}`);
       }
 
       const githubSearchObject = await githubSearchJSONstring.json();
@@ -66,7 +66,7 @@ class Search {
         const targetObj = githubSearchObject.items.find(
           (repo) => repo.name === targetLi.textContent
         );
-        await this.stats.insertAdjacentHTML(
+        this.stats.insertAdjacentHTML(
           "beforeend",
           `
           <p>Name: ${targetObj.name}<br />
