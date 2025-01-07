@@ -27,7 +27,6 @@ class Search {
   }
 
   async searchRepo() {
-    // check if '' or has leading spaces
     const inputTrimmed = this.input.value.trimStart();
     if (!this.input.value || !inputTrimmed.length) {
       this.autocomplete.textContent = "";
@@ -62,7 +61,7 @@ new Search();
 
 function onLiClick(evt) {
   const targetLi = evt.target.closest("li");
-  console.log(targetLi.innerHTML);
+
   this.repa = makeElement("div", "repa");
   this.stats = makeElement("div", "stats");
   const repoWrapper = document.querySelector(".repoWrapper");
@@ -71,6 +70,8 @@ function onLiClick(evt) {
   this.cross = makeElement("img", "cross");
   this.cross.src = this.dataURL;
   this.repa.append(this.cross);
+  this.cross.addEventListener("click", removeLiElement);
+
   const targetObj = this.githubSearchObject.items.find(
     (repo) => repo.name === targetLi.textContent
   );
@@ -91,6 +92,11 @@ function makeElement(tagName, className) {
     newElement.classList.add(className);
   }
   return newElement;
+}
+
+function removeLiElement(evt) {
+  const targetLi = evt.target.closest(".repa");
+  targetLi.remove();
 }
 
 function debounce(fn, ms) {
