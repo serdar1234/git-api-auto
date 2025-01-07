@@ -39,7 +39,9 @@ class Search {
     if (!this.input.value) return;
     try {
       const fetchResult = await fetch(
-        `https://api.github.com/search/repositories?q=${this.input.value}&sort=stars&order=desc&per_page=5`
+        `https://api.github.com/search/repositories?q=${encodeURIComponent(
+          this.input.value
+        )}&sort=stars&order=desc&per_page=5`
       );
 
       if (!fetchResult.ok) {
@@ -47,6 +49,7 @@ class Search {
       }
 
       const dataObj = await fetchResult.json();
+      if (this.autocomplete) this.autocomplete.textContent = "";
       dataObj.items.forEach((el) => {
         this.autocomplete__item = this.makeElement("li");
         this.autocomplete__item.innerHTML = el.name;
