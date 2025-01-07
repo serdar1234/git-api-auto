@@ -23,7 +23,6 @@ p {
 }
 
 .app {
-  border: 1px dashed darkred;
   margin: auto;
   max-width: 500px;
 }
@@ -36,8 +35,7 @@ p {
 }
 
 .repa {
-  /* height: 101px; */
-  border-top: 1px solid black;
+  border-top: 1px solid #000;
   display: flex;
   justify-content: space-between;
   align-items: center;

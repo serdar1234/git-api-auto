@@ -4,7 +4,7 @@ class Search {
     this.input = makeElement("input", "searchField");
     this.input.type = "text";
     this.input.autofocus = true;
-    this.autocomplete = makeElement("ul", "autocomplete");
+    this.ulDropdown = makeElement("ul", "autocomplete");
     this.repoWrapper = makeElement("div", "repoWrapper");
     this.githubSearchObject = null;
 
@@ -17,11 +17,11 @@ class Search {
     this.dataURL = `data:image/svg+xml,${this.encodedSVG}`;
 
     this.app.append(this.input);
-    this.app.append(this.autocomplete);
+    this.app.append(this.ulDropdown);
     this.app.append(this.repoWrapper);
 
     this.input.addEventListener("input", this.debouncedSearch());
-    this.autocomplete.addEventListener("click", onLiClick.bind(this));
+    this.ulDropdown.addEventListener("click", addRepa.bind(this));
   }
 
   debouncedSearch() {
@@ -31,7 +31,7 @@ class Search {
   async searchRepo() {
     const inputTrimmed = this.input.value.trimStart();
     if (!this.input.value || !inputTrimmed.length) {
-      this.autocomplete.textContent = "";
+      this.ulDropdown.textContent = "";
       return;
     }
 
@@ -47,11 +47,11 @@ class Search {
       }
 
       this.githubSearchObject = await githubSearchJSONstring.json();
-      if (this.autocomplete) this.autocomplete.textContent = "";
+      this.ulDropdown.textContent = "";
       this.githubSearchObject.items.forEach((el) => {
-        this.autocomplete__item = makeElement("li");
-        this.autocomplete__item.innerHTML = el.name;
-        this.autocomplete.append(this.autocomplete__item);
+        this.liDropdown = makeElement("li");
+        this.liDropdown.innerHTML = el.name;
+        this.ulDropdown.append(this.liDropdown);
       });
     } catch (error) {
       console.error("Error:", error);
@@ -61,7 +61,7 @@ class Search {
 
 new Search();
 
-function onLiClick(evt) {
+function addRepa(evt) {
   const targetLi = evt.target.closest("li");
 
   this.repa = makeElement("div", "repa");
@@ -85,6 +85,9 @@ function onLiClick(evt) {
     Stars: ${targetObj.stargazers_count}</p>
     `
   );
+
+  this.ulDropdown.textContent = "";
+  this.input.value = "";
 }
 
 function makeElement(tagName, className) {
