@@ -36,11 +36,17 @@ class Search {
   }
 
   async searchRepo() {
-    if (!this.input.value) return;
+    // check if '' or has leading spaces
+    const inputTrimmed = this.input.value.trimStart();
+    if (!this.input.value || !inputTrimmed.length) {
+      this.autocomplete.textContent = "";
+      return;
+    }
+
     try {
       const fetchResult = await fetch(
         `https://api.github.com/search/repositories?q=${encodeURIComponent(
-          this.input.value
+          inputTrimmed
         )}&sort=stars&order=desc&per_page=5`
       );
 
@@ -57,7 +63,7 @@ class Search {
         console.log(el.name, el.owner.login, el.stargazers_count);
       });
     } catch (error) {
-      console.error("Error:", error.message);
+      console.error("Error:", error);
     }
   }
 
