@@ -1,9 +1,10 @@
 class Search {
   constructor() {
     this.app = document.querySelector(".app");
-    this.input = this.makeElement("input", "searchField");
-    this.autocomplete = this.makeElement("ul", "autocomplete");
-    this.repoWrapper = this.makeElement("div", "repoWrapper");
+    this.input = makeElement("input", "searchField");
+    this.autocomplete = makeElement("ul", "autocomplete");
+    this.repoWrapper = makeElement("div", "repoWrapper");
+    this.githubSearchObject = null;
 
     this.svgCross = `<svg height="48" width="48" xmlns="http://www.w3.org/2000/svg">
       <line x1="3" y1="3" x2="42" y2="42" style="stroke:red;stroke-width:4"/>
@@ -16,8 +17,12 @@ class Search {
     this.app.append(this.autocomplete);
     this.app.append(this.repoWrapper);
 
-    this.debouncedSearch = debounce(this.searchRepo.bind(this), 500);
-    this.input.addEventListener("input", this.debouncedSearch);
+    this.input.addEventListener("input", this.debouncedSearch());
+    this.autocomplete.addEventListener("click", onLiClick.bind(this));
+  }
+
+  debouncedSearch() {
+    return debounce(this.searchRepo.bind(this), 500);
   }
 
   async searchRepo() {
@@ -38,59 +43,53 @@ class Search {
         throw new Error(`HTTP error: ${response.status}`);
       }
 
-      const githubSearchObject = await response.json();
-      this.autocomplete.textContent = "";
-
-      githubSearchObject.items.forEach((el) => {
-        const li = this.makeElement("li");
-        li.innerHTML = el.name;
-        li.setAttribute("data-name", el.name); // Store repo name in a data attribute
-        this.autocomplete.append(li);
-      });
-
-      // this.autocomplete.replaceWith(this.autocomplete.cloneNode(true)); // delete old event listeners
-      this.autocomplete.addEventListener("click", async (evt) => {
-        const targetLi = evt.target.closest("li");
-        if (!targetLi) return;
-
-        this.repa = this.makeElement("div", "repa");
-        this.stats = this.makeElement("div", "stats");
-        this.cross = this.makeElement("img", "cross");
-        this.cross.src = this.dataURL;
-
-        this.repoWrapper.append(this.repa);
-        this.repa.append(this.stats);
-        this.repa.append(this.cross);
-
-        const targetRepoName = targetLi.getAttribute("data-name");
-        const targetObj = githubSearchObject.items.find(
-          (item) => item.name === targetRepoName
-        );
-
-        this.stats.insertAdjacentHTML(
-          "beforeend",
-          `
-          <p>Name: ${targetObj.name}<br />
-          Owner: ${targetObj.owner.login}<br />
-          Stars: ${targetObj.stargazers_count}</p>
-          `
-        );
+      this.githubSearchObject = await githubSearchJSONstring.json();
+      if (this.autocomplete) this.autocomplete.textContent = "";
+      this.githubSearchObject.items.forEach((el) => {
+        this.autocomplete__item = makeElement("li");
+        this.autocomplete__item.innerHTML = el.name;
+        this.autocomplete.append(this.autocomplete__item);
       });
     } catch (error) {
       console.error("Error:", error);
     }
   }
-
-  makeElement(tagName, className) {
-    const newElement = document.createElement(tagName);
-    if (className) {
-      newElement.classList.add(className);
-    }
-    return newElement;
-  }
 }
 
 new Search();
+
+function onLiClick(evt) {
+  const targetLi = evt.target.closest("li");
+  console.log(targetLi.innerHTML);
+  this.repa = makeElement("div", "repa");
+  this.stats = makeElement("div", "stats");
+  const repoWrapper = document.querySelector(".repoWrapper");
+  repoWrapper.append(this.repa);
+  this.repa.append(this.stats);
+  this.cross = makeElement("img", "cross");
+  this.cross.src = this.dataURL;
+  this.repa.append(this.cross);
+  const targetObj = this.githubSearchObject.items.find(
+    (repo) => repo.name === targetLi.textContent
+  );
+  this.stats.insertAdjacentHTML(
+    "beforeend",
+    `
+    <p>Name: ${targetObj.name}<br />
+    Owner: ${targetObj.owner.login}<br />
+    Stars: ${targetObj.stargazers_count}</p>
+    `
+  );
+}
+
+function makeElement(tagName, className) {
+  const newElement = document.createElement(tagName);
+
+  if (className) {
+    newElement.classList.add(className);
+  }
+  return newElement;
+}
 
 function debounce(fn, ms) {
   let timerID = null;

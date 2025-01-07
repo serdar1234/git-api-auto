@@ -5,6 +5,11 @@ body {
   font-family: 'Roboto', sans-serif;
 }
 
+p {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
 .searchField {
   margin-top: 70px;
   font-size: 48px;
@@ -30,7 +35,7 @@ body {
 }
 
 .repa {
-  height: 101px;
+  /* height: 101px; */
   border-top: 1px solid black;
   display: flex;
   justify-content: space-between;
