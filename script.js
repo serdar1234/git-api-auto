@@ -9,7 +9,8 @@ class Search {
     this.svgCross = `<svg height="48" width="48" xmlns="http://www.w3.org/2000/svg">
       <line x1="3" y1="3" x2="42" y2="42" style="stroke:red;stroke-width:4"/>
       <line x1="42" y1="3" x2="3" y2="42" style="stroke:red;stroke-width:4"/>
-      </svg>`;
+      </svg>
+      `;
     this.encodedSVG = encodeURIComponent(this.svgCross);
     this.dataURL = `data:image/svg+xml,${this.encodedSVG}`;
 
@@ -26,21 +27,22 @@ class Search {
   }
 
   async searchRepo() {
-    const inputTrimmed = this.input.value.trimStart(); // input has leading spaces?
-    if (!inputTrimmed.length) {
+    // check if '' or has leading spaces
+    const inputTrimmed = this.input.value.trimStart();
+    if (!this.input.value || !inputTrimmed.length) {
       this.autocomplete.textContent = "";
       return;
     }
 
     try {
-      const response = await fetch(
+      const githubSearchJSONstring = await fetch(
         `https://api.github.com/search/repositories?q=${encodeURIComponent(
           inputTrimmed
         )}&sort=stars&order=desc&per_page=5`
       );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error: ${response.status}`);
+      if (!githubSearchJSONstring.ok) {
+        throw new Error(`HTTP error: ${githubSearchJSONstring.status}`);
       }
 
       this.githubSearchObject = await githubSearchJSONstring.json();
