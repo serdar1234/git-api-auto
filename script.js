@@ -5,9 +5,6 @@ class Search {
     this.autocomplete = this.makeElement("ul", "autocomplete");
     this.repoWrapper = this.makeElement("div", "repoWrapper");
 
-    this.repa = this.makeElement("div", "repa");
-    this.statistics = this.makeElement("div", "stats");
-
     this.svgCross = `<svg height="48" width="48" xmlns="http://www.w3.org/2000/svg">
       <line x1="3" y1="3" x2="42" y2="42" style="stroke:red;stroke-width:4"/>
       <line x1="42" y1="3" x2="3" y2="42" style="stroke:red;stroke-width:4"/>
@@ -15,15 +12,10 @@ class Search {
       `;
     this.encodedSVG = encodeURIComponent(this.svgCross);
     this.dataURL = `data:image/svg+xml,${this.encodedSVG}`;
-    this.cross = this.makeElement("img", "cross");
-    this.cross.src = this.dataURL;
 
     this.app.append(this.input);
     this.app.append(this.autocomplete);
     this.app.append(this.repoWrapper);
-    this.repoWrapper.append(this.repa);
-    this.repa.append(this.statistics);
-    this.repa.append(this.cross);
 
     this.input.addEventListener("input", this.debouncedSearch());
 
@@ -44,23 +36,44 @@ class Search {
     }
 
     try {
-      const fetchResult = await fetch(
+      const githubSearchJSONstring = await fetch(
         `https://api.github.com/search/repositories?q=${encodeURIComponent(
           inputTrimmed
         )}&sort=stars&order=desc&per_page=5`
       );
 
-      if (!fetchResult.ok) {
-        throw new Error(`HTTP error: ${fetchResult.message}`);
+      if (!githubSearchJSONstring.ok) {
+        throw new Error(`HTTP error: ${githubSearchJSONstring.message}`);
       }
 
-      const dataObj = await fetchResult.json();
+      const githubSearchObject = await githubSearchJSONstring.json();
       if (this.autocomplete) this.autocomplete.textContent = "";
-      dataObj.items.forEach((el) => {
+      githubSearchObject.items.forEach((el) => {
         this.autocomplete__item = this.makeElement("li");
         this.autocomplete__item.innerHTML = el.name;
         this.autocomplete.append(this.autocomplete__item);
-        console.log(el.name, el.owner.login, el.stargazers_count);
+      });
+      this.autocomplete.addEventListener("click", async (evt) => {
+        const targetLi = evt.target.closest("li");
+        console.log(targetLi.innerHTML);
+        this.repa = this.makeElement("div", "repa");
+        this.stats = this.makeElement("div", "stats");
+        this.repoWrapper.append(this.repa);
+        this.repa.append(this.stats);
+        this.cross = this.makeElement("img", "cross");
+        this.cross.src = this.dataURL;
+        this.repa.append(this.cross);
+        const targetObj = githubSearchObject.items.find(
+          (repo) => repo.name === targetLi.textContent
+        );
+        await this.stats.insertAdjacentHTML(
+          "beforeend",
+          `
+          <p>Name: ${targetObj.name}<br />
+          Owner: ${targetObj.owner.login}<br />
+          Stars: ${targetObj.stargazers_count}</p>
+          `
+        );
       });
     } catch (error) {
       console.error("Error:", error);

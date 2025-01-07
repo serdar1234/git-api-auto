@@ -25,8 +25,6 @@ body {
 .repoWrapper {
   margin-top: 45px;
   width: 100%;
-  opacity: 0px;
-  border-top: 1px solid black;
   border-top: 0px;
   background-color: #E27BEB;
 }
@@ -41,7 +39,6 @@ body {
 }
 
 .stats {
-  background-color: #00ff00;
   font-size: 24px;
   font-weight: 400;
   line-height: 28px;
@@ -71,4 +68,5 @@ ul.autocomplete {
 
 .autocomplete li:hover {
   background-color: #65CDF9;
+  cursor: pointer;
 }

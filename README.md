@@ -1,2 +1,4 @@
 # git-api-auto
-JavaScript app that works with API GitHub
+
+About: JavaScript app that works with API GitHub
+Gitpages: https://serdar1234.github.io/git-api-auto/
